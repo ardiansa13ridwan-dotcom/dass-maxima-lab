@@ -2,12 +2,9 @@ import { useEffect, useState } from "react"
 import Papa from "papaparse"
 
 const App = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [pasien, setPasien] = useState<any[]>([])
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [pasienCetak, setPasienCetak] = useState<any | null>(null)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hitungDass42 = (jawaban: any) => {
     const depresi = [3, 5, 10, 13, 16, 17, 21, 24, 26, 31, 34, 37, 38, 42]
     const kecemasan = [2, 4, 7, 9, 15, 19, 20, 23, 25, 28, 30, 36, 40, 41]
@@ -44,58 +41,56 @@ const App = () => {
 
   useEffect(() => {
     const urlCsv = "https://docs.google.com/spreadsheets/d/1ZdZxEpDcvbzZCTY0mIKges9xsso5J_GrR-04nxg1Hl0/export?format=csv"
-
     const tarikData = () => {
       Papa.parse(urlCsv, {
         download: true,
         header: true,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         complete: (hasil: any) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const dataTerhitung = hasil.data.map((baris: any) => ({
             nama: baris["Nama Peserta :"],
             umur: baris["Umur :"],
             perusahaan: baris["Perusahaan :"],
             hasil: hitungDass42(baris)
           }))
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           setPasien(dataTerhitung.filter((p: any) => p.nama))
         }
       })
     }
-
     tarikData()
     const interval = setInterval(tarikData, 5000)
-
     return () => clearInterval(interval)
   }, [])
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const buatKesimpulan = (hasil: any) => {
-    return `Pasien mengalami tingkat depresi ${hasil.depresi.toLowerCase()}, tingkat kecemasan ${hasil.kecemasan.toLowerCase()}, dan tingkat stres ${hasil.stres.toLowerCase()}.`
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const tanganiCetak = (p: any) => {
-    setPasienCetak(p)
+    return `Pasien memiliki tingkat depresi ${hasil.depresi.toLowerCase()}, tingkat kecemasan ${hasil.kecemasan.toLowerCase()}, dan tingkat stres ${hasil.stres.toLowerCase()}.`
   }
 
   if (pasienCetak) {
     return (
-      <div className="bg-white p-8 print:p-0 text-black font-sans min-h-screen print:min-h-0 flex flex-col">
+      <div className="bg-white p-8 print:p-0 text-black font-sans min-h-screen print:min-h-0 flex flex-col" style={{ WebkitPrintColorAdjust: 'exact' }}>
         <div className="print:hidden mb-8 flex gap-4">
-          <button onClick={() => setPasienCetak(null)} className="px-6 py-2 bg-gray-500 text-white rounded font-bold hover:bg-gray-600 transition-colors">
-            Kembali
-          </button>
-          <button onClick={() => window.print()} className="px-6 py-2 bg-blue-900 text-white rounded font-bold hover:bg-blue-800 transition-colors">
-            Cetak Dokumen
-          </button>
+          <button onClick={() => setPasienCetak(null)} className="px-6 py-2 bg-gray-500 text-white rounded font-bold">Kembali</button>
+          <button onClick={() => window.print()} className="px-6 py-2 bg-blue-900 text-white rounded font-bold">Cetak Dokumen</button>
         </div>
         
-        <div className="max-w-3xl mx-auto flex-grow w-full">
-          <div className="mb-4">
-            <h3 className="font-bold text-lg mb-2 text-left">Data Peserta</h3>
-            <div className="grid grid-cols-[180px_10px_1fr] gap-1 text-lg text-left font-medium">
+        <div className="max-w-3xl mx-auto flex-grow w-full relative">
+          <div className="absolute top-0 right-0 w-48">
+            <img 
+              src="https://raw.githubusercontent.com/ardiansa13ridwan-dotcom/dass-maxima-lab/main/public/logo-maxima.jpg" 
+              alt="Logo Maxima" 
+              className="w-full h-auto"
+              onError={(e) => (e.currentTarget.style.display = 'none')}
+            />
+          </div>
+
+          <div className="mb-8 pt-4">
+            <h1 className="text-2xl font-black text-blue-900 uppercase tracking-tight">Hasil Skoring DASS-42</h1>
+            <p className="text-lg font-bold text-gray-700">Maxima Laboratorium Klinik</p>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="font-bold text-md mb-2 text-left uppercase border-l-4 border-blue-900 pl-2">Data Peserta</h3>
+            <div className="grid grid-cols-[180px_10px_1fr] gap-1 text-md text-left font-medium">
               <div>Nama Peserta</div><div>:</div><div>{pasienCetak.nama}</div>
               <div>Umur</div><div>:</div><div>{pasienCetak.umur || "-"}</div>
               <div>Perusahaan</div><div>:</div><div>{pasienCetak.perusahaan || "-"}</div>
@@ -105,145 +100,99 @@ const App = () => {
           <hr className="border-black border-t-2 my-4" />
 
           <div className="mb-6">
-            <h3 className="font-bold text-lg mb-2 text-left">Scoring</h3>
-            <div className="grid grid-cols-[180px_10px_1fr] gap-2 text-lg text-left font-medium">
+            <h3 className="font-bold text-md mb-2 text-left uppercase border-l-4 border-blue-900 pl-2">Scoring</h3>
+            <div className="grid grid-cols-[180px_10px_1fr] gap-1 text-md text-left font-medium">
               <div>Skala Depresi</div><div>:</div><div>{pasienCetak.hasil.skorDepresi} ({pasienCetak.hasil.depresi})</div>
               <div>Skala Kecemasan</div><div>:</div><div>{pasienCetak.hasil.skorKecemasan} ({pasienCetak.hasil.kecemasan})</div>
               <div>Skala Stress</div><div>:</div><div>{pasienCetak.hasil.skorStres} ({pasienCetak.hasil.stres})</div>
             </div>
           </div>
 
-          <div className="mb-4 text-left">
-            <h3 className="font-bold text-lg mb-2">Indikator Penilaian</h3>
-            <table className="w-full border-collapse border border-black text-center text-md">
-              <thead className="bg-gray-200">
+          <div className="mb-6 text-left">
+            <h3 className="font-bold text-md mb-2 uppercase border-l-4 border-blue-900 pl-2">Indikator Penilaian</h3>
+            <table className="w-full border-collapse border border-black text-center text-sm">
+              <thead className="bg-blue-900 text-white shadow-[inset_0_0_0_999px_rgba(30,58,138,1)]">
                 <tr>
-                  <th className="border border-black p-2">Tingkat</th>
-                  <th className="border border-black p-2">Depresi</th>
-                  <th className="border border-black p-2">Kecemasan</th>
-                  <th className="border border-black p-2">Stress</th>
+                  <th className="border border-black p-2 text-white">Tingkat</th>
+                  <th className="border border-black p-2 text-white">Depresi</th>
+                  <th className="border border-black p-2 text-white">Kecemasan</th>
+                  <th className="border border-black p-2 text-white">Stress</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="border border-black p-2">Normal</td>
-                  <td className="border border-black p-2">0 - 9</td>
-                  <td className="border border-black p-2">0 - 7</td>
-                  <td className="border border-black p-2">0 - 14</td>
-                </tr>
-                <tr>
-                  <td className="border border-black p-2">Ringan</td>
-                  <td className="border border-black p-2">10 - 13</td>
-                  <td className="border border-black p-2">8 - 9</td>
-                  <td className="border border-black p-2">15 - 18</td>
-                </tr>
-                <tr>
-                  <td className="border border-black p-2">Sedang</td>
-                  <td className="border border-black p-2">14 - 20</td>
-                  <td className="border border-black p-2">10 - 14</td>
-                  <td className="border border-black p-2">19 - 25</td>
-                </tr>
-                <tr>
-                  <td className="border border-black p-2">Parah</td>
-                  <td className="border border-black p-2">21 - 27</td>
-                  <td className="border border-black p-2">15 - 19</td>
-                  <td className="border border-black p-2">26 - 33</td>
-                </tr>
-                <tr>
-                  <td className="border border-black p-2">Sangat parah</td>
-                  <td className="border border-black p-2">&gt; 28</td>
-                  <td className="border border-black p-2">&gt; 20</td>
-                  <td className="border border-black p-2">&gt; 34</td>
-                </tr>
+                {["Normal", "Ringan", "Sedang", "Parah", "Sangat Parah"].map((t, i) => (
+                  <tr key={i}>
+                    <td className="border border-black p-1 font-semibold bg-gray-50">{t}</td>
+                    <td className="border border-black p-1">{["0-9", "10-13", "14-20", "21-27", ">28"][i]}</td>
+                    <td className="border border-black p-1">{["0-7", "8-9", "10-14", "15-19", ">20"][i]}</td>
+                    <td className="border border-black p-1">{["0-14", "15-18", "19-25", "26-33", ">34"][i]}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
 
-          <div className="mb-4 border border-black p-4 text-left">
-            <p className="font-bold mb-1 text-md">Kesimpulan :</p>
-            <p className="text-md">{buatKesimpulan(pasienCetak.hasil)}</p>
+          <div className="mb-6 border-2 border-blue-900 p-4 text-left bg-blue-50/30">
+            <p className="font-bold mb-1 text-sm text-blue-900 uppercase">Kesimpulan :</p>
+            <p className="text-sm font-medium">{buatKesimpulan(pasienCetak.hasil)}</p>
           </div>
 
-          <div className="text-left text-xs italic mb-6 text-gray-600">
-            <p>Reference:</p>
-            <p>Lovibond, S.H. & Lovibond, P.F. (1995). Manual for the Depression Anxiety Stress Scales (2nd. Ed.). Sydney: Psychology Foundation.</p>
-          </div>
-
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-end mt-8">
             <div className="text-center w-64">
-              <p className="mb-16 text-lg">Mengetahui,</p>
-              <p className="font-bold border-b border-black pb-1 inline-block text-lg"></p>
-              <p className="mt-1 text-lg"></p>
+              <p className="mb-16 text-md"></p>
+              <p className="font-bold border-b-2 border-black pb-1 inline-block text-md"></p>
+              <p className="mt-1 text-md text-gray-600 font-bold uppercase"></p>
             </div>
           </div>
-        </div>
-
-        <div className="mt-2 text-center text-sm text-gray-400">
-          Dibuat oleh Ar Development Team
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 p-8 text-blue-900 font-sans flex flex-col">
-      <div className="max-w-7xl mx-auto flex-grow w-full">
-        <h1 className="text-3xl font-bold mb-8 text-center uppercase tracking-wider">
-          Hasil Skoring DASS-42<br/>
-          <span className="text-xl font-medium">Maxima Laboratorium Klinik</span>
-        </h1>
+    <div className="min-h-screen bg-blue-50 p-8 text-blue-900 font-sans">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-8 border-b-4 border-blue-900 pb-4">
+          <div className="text-left">
+            <h1 className="text-3xl font-extrabold uppercase tracking-tighter">Hasil Skoring DASS-42</h1>
+            <p className="text-xl font-bold text-blue-800">Maxima Laboratorium Klinik</p>
+          </div>
+          <div className="w-40 bg-white p-2 rounded shadow-sm">
+            <img 
+              src="https://raw.githubusercontent.com/ardiansa13ridwan-dotcom/dass-maxima-lab/main/public/logo-maxima.jpg" 
+              alt="Logo Maxima" 
+              className="w-full h-auto"
+            />
+          </div>
+        </div>
         
-        <div className="overflow-hidden bg-white rounded-lg shadow border border-gray-200">
+        <div className="overflow-hidden bg-white rounded-xl shadow-2xl border border-blue-100">
           <table className="min-w-full text-left border-collapse">
             <thead className="bg-blue-900 text-white">
               <tr>
-                <th className="p-4 border-b-2 border-blue-900 font-semibold">Nama Pasien</th>
-                <th className="p-4 border-b-2 border-blue-900 font-semibold text-center">Depresi</th>
-                <th className="p-4 border-b-2 border-blue-900 font-semibold text-center">Kecemasan</th>
-                <th className="p-4 border-b-2 border-blue-900 font-semibold text-center">Stres</th>
-                <th className="p-4 border-b-2 border-blue-900 font-semibold text-center">Aksi</th>
+                <th className="p-4 font-bold uppercase text-sm">Nama Pasien</th>
+                <th className="p-4 font-bold uppercase text-sm text-center">Depresi</th>
+                <th className="p-4 font-bold uppercase text-sm text-center">Kecemasan</th>
+                <th className="p-4 font-bold uppercase text-sm text-center">Stres</th>
+                <th className="p-4 font-bold uppercase text-sm text-center">Aksi</th>
               </tr>
             </thead>
             <tbody>
-              {pasien.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="p-8 text-center text-gray-500 italic">
-                    Menunggu data pasien masuk...
+              {pasien.map((p, i) => (
+                <tr key={i} className="hover:bg-blue-50 transition-colors border-b border-gray-100">
+                  <td className="p-4 font-bold text-blue-950">{p.nama}</td>
+                  <td className="p-4 text-center uppercase text-xs font-black">{p.hasil.depresi}</td>
+                  <td className="p-4 text-center uppercase text-xs font-black">{p.hasil.kecemasan}</td>
+                  <td className="p-4 text-center uppercase text-xs font-black">{p.hasil.stres}</td>
+                  <td className="p-4 text-center">
+                    <button onClick={() => setPasienCetak(p)} className="px-4 py-1 bg-blue-900 text-white rounded font-bold text-xs uppercase hover:bg-blue-800">Cetak</button>
                   </td>
                 </tr>
-              ) : (
-                pasien.map((p, indeks) => (
-                  <tr key={indeks} className="hover:bg-blue-100 transition-colors duration-150">
-                    <td className="p-4 border-b border-gray-200 font-medium">{p.nama}</td>
-                    <td className="p-4 border-b border-gray-200 text-center">
-                      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${p.hasil.depresi === 'Normal' ? 'bg-green-100 text-green-800' : p.hasil.depresi === 'Sangat Parah' ? 'bg-red-200 text-red-900' : 'bg-yellow-100 text-yellow-800'}`}>
-                        {p.hasil.depresi}
-                      </span>
-                    </td>
-                    <td className="p-4 border-b border-gray-200 text-center">
-                      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${p.hasil.kecemasan === 'Normal' ? 'bg-green-100 text-green-800' : p.hasil.kecemasan === 'Sangat Parah' ? 'bg-red-200 text-red-900' : 'bg-yellow-100 text-yellow-800'}`}>
-                        {p.hasil.kecemasan}
-                      </span>
-                    </td>
-                    <td className="p-4 border-b border-gray-200 text-center">
-                      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${p.hasil.stres === 'Normal' ? 'bg-green-100 text-green-800' : p.hasil.stres === 'Sangat Parah' ? 'bg-red-200 text-red-900' : 'bg-yellow-100 text-yellow-800'}`}>
-                        {p.hasil.stres}
-                      </span>
-                    </td>
-                    <td className="p-4 border-b border-gray-200 text-center">
-                      <button onClick={() => tanganiCetak(p)} className="px-4 py-1 bg-blue-900 text-white rounded font-medium hover:bg-blue-800 transition-colors">
-                        Cetak
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>
-      </div>
-      <div className="mt-12 text-center text-sm font-medium text-blue-900/60">
-        Dibuat oleh Ar Development Team
+        <div className="mt-8 text-center text-[10px] font-bold text-blue-900/40 uppercase">Ar Development Team</div>
       </div>
     </div>
   )
