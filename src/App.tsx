@@ -147,9 +147,9 @@ const App = () => {
 
           <div className="flex justify-end mt-8">
             <div className="text-center w-64">
-              <p className="mb-16 text-md">Mengetahui,</p>
-              <p className="font-bold border-b-2 border-black pb-1 inline-block text-md">Julistiawati Andi. P</p>
-              <p className="mt-1 text-md text-gray-600 font-bold uppercase">Manager</p>
+              <p className="mb-16 text-md"></p>
+              <p className="font-bold border-b-2 border-black pb-1 inline-block text-md"></p>
+              <p className="mt-1 text-md text-gray-600 font-bold uppercase"></p>
             </div>
           </div>
         </div>
