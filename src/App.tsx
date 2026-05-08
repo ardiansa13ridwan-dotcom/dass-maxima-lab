@@ -4,6 +4,7 @@ import Papa from "papaparse"
 const App = () => {
   const [pasien, setPasien] = useState<any[]>([])
   const [pasienCetak, setPasienCetak] = useState<any | null>(null)
+  const [kataKunci, setKataKunci] = useState("")
 
   const hitungDass42 = (jawaban: any) => {
     const depresi = [3, 5, 10, 13, 16, 17, 21, 24, 26, 31, 34, 37, 38, 42]
@@ -72,6 +73,8 @@ const App = () => {
     if (tingkat === "Parah") return "text-red-600"
     return "text-purple-700"
   }
+
+  const pasienDifilter = pasien.filter((p) => p.nama.toLowerCase().includes(kataKunci.toLowerCase()))
 
   if (pasienCetak) {
     return (
@@ -142,7 +145,7 @@ const App = () => {
             </div>
           </div>
         </div>
-        {/* NAMA PENGEMBANG DI BAWAH HALAMAN CETAK */}
+        
         <div className="text-center pb-4">
             <p className="text-[10px] font-bold text-blue-900/40 uppercase tracking-widest">Ar Development Team</p>
         </div>
@@ -163,6 +166,16 @@ const App = () => {
           </div>
         </div>
         
+        <div className="mb-6">
+          <input 
+            type="text" 
+            placeholder="Cari nama pasien di sini..." 
+            className="w-full p-4 rounded-xl border-2 border-blue-200 outline-none focus:border-blue-900 text-blue-900 font-bold shadow-sm"
+            value={kataKunci}
+            onChange={(e) => setKataKunci(e.target.value)}
+          />
+        </div>
+
         <div className="overflow-hidden bg-white rounded-xl shadow-2xl border border-blue-100">
           <table className="min-w-full text-left border-collapse">
             <thead className="bg-blue-900 text-white">
@@ -175,7 +188,7 @@ const App = () => {
               </tr>
             </thead>
             <tbody>
-              {pasien.map((p, i) => (
+              {pasienDifilter.map((p, i) => (
                 <tr key={i} className="hover:bg-blue-50 transition-colors border-b border-gray-100">
                   <td className="p-4 font-bold text-blue-950">{p.nama}</td>
                   <td className={"p-4 text-center uppercase text-xs font-black " + getWarnaTeks(p.hasil.depresi)}>{p.hasil.depresi}</td>
@@ -186,10 +199,15 @@ const App = () => {
                   </td>
                 </tr>
               ))}
+              {pasienDifilter.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="p-8 text-center font-bold text-gray-400">Tidak ada pasien dengan nama tersebut</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
-        {/* NAMA PENGEMBANG DI BAWAH HALAMAN UTAMA */}
+        
         <div className="mt-8 text-center">
             <p className="text-[10px] font-bold text-blue-900/40 uppercase tracking-widest">Ar Development Team</p>
         </div>
