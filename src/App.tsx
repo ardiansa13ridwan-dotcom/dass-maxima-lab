@@ -76,7 +76,7 @@ const App = () => {
         <div className="max-w-3xl mx-auto flex-grow w-full relative">
           <div className="absolute top-0 right-0 w-48">
             <img 
-              src="https://raw.githubusercontent.com/ardiansa13ridwan-dotcom/dass-maxima-lab/main/public/logo-maxima.jpg" 
+              src="https://raw.githubusercontent.com/ardiansa13ridwan-dotcom/dass-maxima-lab/main/public/logo-maxima.jpeg" 
               alt="Logo Maxima" 
               className="w-full h-auto"
               onError={(e) => (e.currentTarget.style.display = 'none')}
