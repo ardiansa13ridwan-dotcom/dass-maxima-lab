@@ -65,6 +65,14 @@ const App = () => {
     return `Pasien memiliki tingkat depresi ${hasil.depresi.toLowerCase()}, tingkat kecemasan ${hasil.kecemasan.toLowerCase()}, dan tingkat stres ${hasil.stres.toLowerCase()}.`
   }
 
+  const getWarnaTeks = (tingkat: string) => {
+    if (tingkat === "Normal") return "text-green-600"
+    if (tingkat === "Ringan") return "text-yellow-500"
+    if (tingkat === "Sedang") return "text-orange-500"
+    if (tingkat === "Parah") return "text-red-600"
+    return "text-purple-700"
+  }
+
   if (pasienCetak) {
     return (
       <div className="bg-white p-8 print:p-0 text-black font-sans min-h-screen print:min-h-0 flex flex-col" style={{ WebkitPrintColorAdjust: 'exact' }}>
@@ -76,7 +84,7 @@ const App = () => {
         <div className="max-w-3xl mx-auto flex-grow w-full relative">
           <div className="absolute top-0 right-0 w-48">
             <img 
-              src="/logo-maxima.jpeg"
+              src="/logo-maxima.jpeg" 
               alt="Logo Maxima" 
               className="w-full h-auto"
               onError={(e) => (e.currentTarget.style.display = 'none')}
@@ -139,9 +147,9 @@ const App = () => {
 
           <div className="flex justify-end mt-8">
             <div className="text-center w-64">
-              <p className="mb-16 text-md"></p>
-              <p className="font-bold border-b-2 border-black pb-1 inline-block text-md"></p>
-              <p className="mt-1 text-md text-gray-600 font-bold uppercase"></p>
+              <p className="mb-16 text-md">Mengetahui,</p>
+              <p className="font-bold border-b-2 border-black pb-1 inline-block text-md">Julistiawati Andi. P</p>
+              <p className="mt-1 text-md text-gray-600 font-bold uppercase">Manager</p>
             </div>
           </div>
         </div>
@@ -159,7 +167,7 @@ const App = () => {
           </div>
           <div className="w-40 bg-white p-2 rounded shadow-sm">
             <img 
-              src="https://raw.githubusercontent.com/ardiansa13ridwan-dotcom/dass-maxima-lab/main/public/logo-maxima.jpg" 
+              src="/logo-maxima.jpeg" 
               alt="Logo Maxima" 
               className="w-full h-auto"
             />
@@ -181,9 +189,9 @@ const App = () => {
               {pasien.map((p, i) => (
                 <tr key={i} className="hover:bg-blue-50 transition-colors border-b border-gray-100">
                   <td className="p-4 font-bold text-blue-950">{p.nama}</td>
-                  <td className="p-4 text-center uppercase text-xs font-black">{p.hasil.depresi}</td>
-                  <td className="p-4 text-center uppercase text-xs font-black">{p.hasil.kecemasan}</td>
-                  <td className="p-4 text-center uppercase text-xs font-black">{p.hasil.stres}</td>
+                  <td className={"p-4 text-center uppercase text-xs font-black " + getWarnaTeks(p.hasil.depresi)}>{p.hasil.depresi}</td>
+                  <td className={"p-4 text-center uppercase text-xs font-black " + getWarnaTeks(p.hasil.kecemasan)}>{p.hasil.kecemasan}</td>
+                  <td className={"p-4 text-center uppercase text-xs font-black " + getWarnaTeks(p.hasil.stres)}>{p.hasil.stres}</td>
                   <td className="p-4 text-center">
                     <button onClick={() => setPasienCetak(p)} className="px-4 py-1 bg-blue-900 text-white rounded font-bold text-xs uppercase hover:bg-blue-800">Cetak</button>
                   </td>
