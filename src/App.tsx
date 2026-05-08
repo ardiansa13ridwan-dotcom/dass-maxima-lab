@@ -145,17 +145,7 @@ const App = () => {
             <p className="text-sm font-medium">{buatKesimpulan(pasienCetak.hasil)}</p>
           </div>
 
-          <div className="flex justify-end mt-8">
-            <div className="text-center w-64">
-              <p className="mb-16 text-md"></p>
-              <p className="font-bold border-b-2 border-black pb-1 inline-block text-md"></p>
-              <p className="mt-1 text-md text-gray-600 font-bold uppercase"></p>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+       }
 
   return (
     <div className="min-h-screen bg-blue-50 p-8 text-blue-900 font-sans">
