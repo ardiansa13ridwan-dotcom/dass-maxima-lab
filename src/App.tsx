@@ -5,8 +5,8 @@ const App = () => {
   const [pasien, setPasien] = useState<any[]>([])
   const [pasienCetak, setPasienCetak] = useState<any | null>(null)
   const [kataKunci, setKataKunci] = useState("")
-  // State baru untuk mode rekapan
   const [isRekapanMode, setIsRekapanMode] = useState(false)
+  const [perusahaanFilter, setPerusahaanFilter] = useState("")
 
   const hitungDass42 = (jawaban: any) => {
     const depresi = [3, 5, 10, 13, 16, 17, 21, 24, 26, 31, 34, 37, 38, 42]
@@ -76,7 +76,14 @@ const App = () => {
     return "text-purple-700"
   }
 
-  // Tampilan 1: Mode Cetak Individu (Tidak berubah)
+  const daftarPerusahaan = Array.from(new Set(pasien.map(p => p.perusahaan).filter(Boolean)))
+
+  const pasienDifilter = pasien.filter((p) => p.nama.toLowerCase().includes(kataKunci.toLowerCase()))
+
+  const pasienRekapan = perusahaanFilter 
+    ? pasien.filter(p => p.perusahaan === perusahaanFilter)
+    : pasien
+
   if (pasienCetak) {
     return (
       <div className="bg-white p-8 print:p-0 text-black font-sans min-h-screen flex flex-col justify-between" style={{ WebkitPrintColorAdjust: 'exact' }}>
@@ -130,7 +137,6 @@ const App = () => {
     )
   }
 
-  // Tampilan 2: Tampilan Cetak Rekapan Seluruh Pasien (BARU)
   if (isRekapanMode) {
     return (
       <div className="bg-white p-8 print:p-0 text-black font-sans min-h-screen flex flex-col justify-between" style={{ WebkitPrintColorAdjust: 'exact' }}>
@@ -148,14 +154,16 @@ const App = () => {
             <div className="pt-2">
               <h1 className="text-2xl font-black text-blue-900 uppercase tracking-tight">Rekapitulasi Hasil Skoring DASS-42</h1>
               <p className="text-lg font-bold text-gray-700">Maxima Laboratorium Klinik</p>
+              <p className="text-sm font-bold text-blue-800 mt-1">
+                Perusahaan: {perusahaanFilter || "Semua Perusahaan"}
+              </p>
               <p className="text-xs text-gray-500 mt-1">Tanggal Cetak: {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
             </div>
           </div>
 
-          {/* Tabel Rekapan */}
           <div className="overflow-hidden border border-gray-400 rounded">
             <table className="min-w-full text-xs text-left border-collapse">
-              <thead className="bg-blue-900 text-white shadow-[inset_0_0_0_999px_rgba(30,58,138,1)] print:shadow-[inset_0_0_0_999px_rgba(30,58,138,1)]">
+              <thead className="bg-blue-900 text-white shadow-[inset_0_0_0_999px_rgba(30,58,138,1)]">
                 <tr>
                   <th className="border border-gray-400 p-2 font-bold uppercase text-white text-center">No.</th>
                   <th className="border border-gray-400 p-2 font-bold uppercase text-white">Nama Pasien</th>
@@ -167,7 +175,7 @@ const App = () => {
                 </tr>
               </thead>
               <tbody>
-                {pasien.map((p, i) => (
+                {pasienRekapan.map((p, i) => (
                   <tr key={i} className="hover:bg-gray-50 transition-colors border-b border-gray-400">
                     <td className="border border-gray-400 p-2 text-center text-gray-700">{i + 1}.</td>
                     <td className="border border-gray-400 p-2 font-bold text-blue-950">{p.nama}</td>
@@ -178,6 +186,11 @@ const App = () => {
                     <td className={"border border-gray-400 p-2 text-center uppercase text-[10px] font-black " + getWarnaTeks(p.hasil.stres)}>{p.hasil.stres}</td>
                   </tr>
                 ))}
+                {pasienRekapan.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="p-4 text-center font-bold text-gray-400">Tidak ada data pasien</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -190,10 +203,6 @@ const App = () => {
     )
   }
 
-  // Filter pencarian pasien (Tidak berubah)
-  const pasienDifilter = pasien.filter((p) => p.nama.toLowerCase().includes(kataKunci.toLowerCase()))
-
-  // Tampilan 3: Halaman Utama (Ditambahkan Tombol Rekapan)
   return (
     <div className="min-h-screen bg-blue-50 p-8 text-blue-900 font-sans">
       <div className="max-w-7xl mx-auto">
@@ -207,8 +216,7 @@ const App = () => {
           </div>
         </div>
         
-        {/* Panel Kontrol Atas (Pencarian & BARU: Tombol Rekapan) */}
-        <div className="mb-6 grid grid-cols-[1fr_auto] gap-4 items-center">
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-4 items-center">
           <input 
             type="text" 
             placeholder="Cari nama pasien di sini..." 
@@ -216,12 +224,23 @@ const App = () => {
             value={kataKunci}
             onChange={(e) => setKataKunci(e.target.value)}
           />
-          {/* Tombol Rekapan BARU */}
+          
+          <select
+            className="p-4 rounded-xl border-2 border-blue-200 outline-none focus:border-blue-900 text-blue-900 font-bold shadow-sm bg-white cursor-pointer"
+            value={perusahaanFilter}
+            onChange={(e) => setPerusahaanFilter(e.target.value)}
+          >
+            <option value="">Semua Perusahaan</option>
+            {daftarPerusahaan.map((pt: any, idx) => (
+              <option key={idx} value={pt}>{pt}</option>
+            ))}
+          </select>
+
           <button 
             onClick={() => setIsRekapanMode(true)}
-            className="px-6 py-4 bg-blue-900 text-white rounded-xl font-bold uppercase text-sm hover:bg-blue-800 shadow-lg shadow-blue-900/10 active:scale-95 transition-transform"
+            className="px-6 py-4 bg-blue-900 text-white rounded-xl font-bold uppercase text-sm hover:bg-blue-800 shadow-lg active:scale-95 transition-transform"
           >
-            Cetak Rekapan Seluruh Pasien
+            Cetak Laporan Rekapan
           </button>
         </div>
 
