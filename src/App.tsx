@@ -7,10 +7,8 @@ const App = () => {
   const [kataKunci, setKataKunci] = useState("")
   const [isRekapanMode, setIsRekapanMode] = useState(false)
   const [perusahaanFilter, setPerusahaanFilter] = useState("")
-  // State baru untuk mengatur bahasa (id = Indonesia, en = Inggris)
   const [lang, setLang] = useState<"id" | "en">("id")
 
-  // Kamus Bahasa untuk seluruh teks aplikasi
   const txt = {
     id: {
       title: "Hasil Skoring DASS-42",
@@ -162,7 +160,6 @@ const App = () => {
   const pasienDifilter = pasien.filter((p) => p.nama.toLowerCase().includes(kataKunci.toLowerCase()))
   const pasienRekapan = perusahaanFilter ? pasien.filter(p => p.perusahaan === perusahaanFilter) : pasien
 
-  // TAMPILAN CETAK INDIVIDU
   if (pasienCetak) {
     return (
       <div className="bg-white p-8 print:p-0 text-black font-sans min-h-screen flex flex-col justify-between" style={{ WebkitPrintColorAdjust: 'exact' }}>
@@ -172,7 +169,6 @@ const App = () => {
               <button onClick={() => setPasienCetak(null)} className="px-6 py-2 bg-gray-500 text-white rounded font-bold hover:bg-gray-600">{txt[lang].btnKembali}</button>
               <button onClick={() => window.print()} className="px-6 py-2 bg-blue-900 text-white rounded font-bold hover:bg-blue-800">{txt[lang].btnCetakDoc}</button>
             </div>
-            {/* Switch Bahasa di Halaman Cetak */}
             <div className="flex gap-1 bg-white p-1 rounded-lg border border-gray-300">
               <button onClick={() => setLang("id")} className={`px-3 py-1 rounded text-xs font-bold ${lang === "id" ? "bg-blue-900 text-white" : "text-gray-700"}`}>ID</button>
               <button onClick={() => setLang("en")} className={`px-3 py-1 rounded text-xs font-bold ${lang === "en" ? "bg-blue-900 text-white" : "text-gray-700"}`}>EN</button>
@@ -223,7 +219,6 @@ const App = () => {
     )
   }
 
-  // TAMPILAN CETAK REKAPAN
   if (isRekapanMode) {
     return (
       <div className="bg-white p-8 print:p-0 text-black font-sans min-h-screen flex flex-col justify-between" style={{ WebkitPrintColorAdjust: 'exact' }}>
@@ -250,7 +245,7 @@ const App = () => {
               <p className="text-sm font-bold text-blue-800 mt-1">
                 {txt[lang].perusahaan}: {perusahaanFilter || (lang === "id" ? "Semua Perusahaan" : "All Companies")}
               </p>
-              <p className="text-xs text-gray-500 mt-1">{txt[lang].tglCtxt}: {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              <p className="text-xs text-gray-500 mt-1">{txt[lang].tglCetak}: {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
             </div>
           </div>
 
@@ -296,7 +291,6 @@ const App = () => {
     )
   }
 
-  // TAMPILAN HALAMAN UTAMA DASHBOARD
   return (
     <div className="min-h-screen bg-blue-50 p-8 text-blue-900 font-sans">
       <div className="max-w-7xl mx-auto">
@@ -306,7 +300,6 @@ const App = () => {
             <p className="text-xl font-bold text-blue-800">{txt[lang].sub}</p>
           </div>
           <div className="flex items-center gap-4">
-            {/* TOGLE SWITCH BAHASA UTAMA */}
             <div className="flex gap-1 bg-white p-1 rounded-xl border-2 border-blue-200 shadow-sm">
               <button onClick={() => setLang("id")} className={`px-4 py-1.5 rounded-lg text-xs font-black uppercase transition-all ${lang === "id" ? "bg-blue-900 text-white shadow" : "text-blue-900 hover:bg-blue-50"}`}>ID</button>
               <button onClick={() => setLang("en")} className={`px-4 py-1.5 rounded-lg text-xs font-black uppercase transition-all ${lang === "en" ? "bg-blue-900 text-white shadow" : "text-blue-900 hover:bg-blue-50"}`}>EN</button>
