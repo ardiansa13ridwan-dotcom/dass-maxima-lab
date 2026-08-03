@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import Papa from "papaparse"
+import * as XLSX from "xlsx"
 
 const App = () => {
   const [pasien, setPasien] = useState<any[]>([])
@@ -16,6 +17,7 @@ const App = () => {
       search: "Cari nama pasien di sini...",
       allPt: "Semua Perusahaan",
       btnPrintSummary: "Cetak Laporan Rekapan",
+      btnDownloadExcel: "Unduh Excel",
       thNama: "Nama Pasien",
       thDepresi: "Depresi",
       thKecemasan: "Kecemasan",
@@ -47,6 +49,7 @@ const App = () => {
       search: "Search patient name here...",
       allPt: "All Companies",
       btnPrintSummary: "Print Summary Report",
+      btnDownloadExcel: "Download Excel",
       thNama: "Patient Name",
       thDepresi: "Depression",
       thKecemasan: "Anxiety",
@@ -160,6 +163,28 @@ const App = () => {
   const pasienDifilter = pasien.filter((p) => p.nama.toLowerCase().includes(kataKunci.toLowerCase()))
   const pasienRekapan = perusahaanFilter ? pasien.filter(p => p.perusahaan === perusahaanFilter) : pasien
 
+  // FUNGSI UNDUH EXCEL
+  const unduhExcel = () => {
+    const dataUntukExcel = pasienRekapan.map((p, index) => ({
+      [txt[lang].no]: index + 1,
+      [txt[lang].thNama]: p.nama,
+      [txt[lang].thUmur]: p.umur || "-",
+      [txt[lang].thPerusahaan]: p.perusahaan || "-",
+      [txt[lang].thDepresi]: translateTingkat(p.hasil.depresi),
+      [txt[lang].thKecemasan]: translateTingkat(p.hasil.kecemasan),
+      [txt[lang].thStres]: translateTingkat(p.hasil.stres),
+    }))
+
+    const worksheet = XLSX.utils.json_to_sheet(dataUntukExcel)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data DASS-42")
+    
+    // Memberi nama file otomatis berdasarkan filter dan tanggal
+    const namaPt = perusahaanFilter ? perusahaanFilter.replace(/[^a-zA-Z0-9]/g, '_') : 'Semua_Perusahaan'
+    const tgl = new Date().toISOString().split('T')[0]
+    XLSX.writeFile(workbook, `Rekap_DASS42_${namaPt}_${tgl}.xlsx`)
+  }
+
   if (pasienCetak) {
     return (
       <div className="bg-white p-8 print:p-0 text-black font-sans min-h-screen flex flex-col justify-between" style={{ WebkitPrintColorAdjust: 'exact' }}>
@@ -227,6 +252,7 @@ const App = () => {
             <div className="flex gap-4">
               <button onClick={() => setIsRekapanMode(false)} className="px-6 py-2 bg-gray-500 text-white rounded font-bold hover:bg-gray-600">{txt[lang].btnKembali}</button>
               <button onClick={() => window.print()} className="px-6 py-2 bg-blue-900 text-white rounded font-bold hover:bg-blue-800">{txt[lang].btnPrintSummary}</button>
+              <button onClick={unduhExcel} className="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700">{txt[lang].btnDownloadExcel}</button>
             </div>
             <div className="flex gap-1 bg-white p-1 rounded-lg border border-gray-300">
               <button onClick={() => setLang("id")} className={`px-3 py-1 rounded text-xs font-bold ${lang === "id" ? "bg-blue-900 text-white" : "text-gray-700"}`}>ID</button>
@@ -310,7 +336,7 @@ const App = () => {
           </div>
         </div>
         
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-4 items-center">
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-[1fr_auto_auto_auto] gap-4 items-center">
           <input 
             type="text" 
             placeholder={txt[lang].search} 
@@ -332,9 +358,16 @@ const App = () => {
 
           <button 
             onClick={() => setIsRekapanMode(true)}
-            className="px-6 py-4 bg-blue-900 text-white rounded-xl font-bold uppercase text-sm hover:bg-blue-800 shadow-lg active:scale-95 transition-transform"
+            className="px-6 py-4 bg-blue-900 text-white rounded-xl font-bold uppercase text-sm hover:bg-blue-800 shadow-lg active:scale-95 transition-transform whitespace-nowrap"
           >
             {txt[lang].btnPrintSummary}
+          </button>
+
+          <button 
+            onClick={unduhExcel}
+            className="px-6 py-4 bg-green-600 text-white rounded-xl font-bold uppercase text-sm hover:bg-green-700 shadow-lg active:scale-95 transition-transform whitespace-nowrap"
+          >
+            {txt[lang].btnDownloadExcel}
           </button>
         </div>
 
